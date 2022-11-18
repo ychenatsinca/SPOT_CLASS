@@ -7,7 +7,7 @@
 git add  *.R *.sh *submit* 
 
 #commit files 
-git commit -m "add submision files!"
+git commit -m "update files with comments!"
 
 
 #set the origin, only for the first time

@@ -1,9 +1,14 @@
 # Yiying starts working on vv's code 2022-11-15 
-# Revision for the prgrame structure
+# Revision for the program structure
+# Date: 2022-11-18 
+# Refined as R function for the bash submission/jobsin bash mode with Rscript argunments 
+#  
 # Step-1: SPOT classification for each grid (tree2 while loop)
 # Step-2: Merge each grids classification result into one raster (mergeraster_Taiwan while loop)
 # Step-3: Pond detection and calculate pond size (ponddetect while loop)
-# Now I'm working on the Step-1 for the satatistic of the signal grid box classfication 
+#
+# Now I'm working on the Step-1 for the satatistic of the single grid box classfication 
+#
 fun.lu.type <- function (xmin=235, xmax=236, ymin=210, ymax=211, wrk_yr=2015, aoi_reg="XY_ID")
 # start the fun.lu.type
 {
@@ -21,6 +26,10 @@ if (aoi_reg != "XY_ID" ) {
    if(aoi_reg=="TAIPEI")  xmin=235; xmax=235; ymin=210; ymax=210
    if(aoi_reg=="TAOYUAN") xmin=231; xmax=234; ymin=208; ymax=210
    if(aoi_reg=="TAIWAN")  xmin=224; xmax=240; ymin=185; ymax=212
+   if(aoi_reg=="NORTH")   xmin=224; xmax=240; ymin=205; ymax=212
+   if(aoi_reg=="CENTRAL") xmin=224; xmax=240; ymin=195; ymax=204
+   if(aoi_reg=="SOUTH")   xmin=224; xmax=240; ymin=185; ymax=194
+
    #set AOI as user defined x and y id range
    } else {
       xmin=xmin; xmax=xmax
@@ -502,21 +511,22 @@ while (tree2==TRUE){
         writeRaster(outputraster,paste(image_path,"/2017and2018_",allaoi[aoi],"_taiwanclassification.tif",sep=""),overwrite=TRUE)
 
         png(paste(image_path,"/2017and2018_",allaoi[aoi],"_taiwanclassification.png",sep=""),
-             width = 1920, height = 1080, units = "px")
+             width = 1080, height = 1080, units = "px")
         # png(paste("/data1/home/vivianlin0921/R_Scripts/PCA(forWFH)/plots/classificationresults/taoyuan/all/",yr,"/2017and2018_",allaoi[aoi],"_taoyuanclassification.png",sep=""))
       }else{
         writeRaster(outputraster,paste(image_path,yr,"_",allaoi[aoi],"_taiwanclassification.tif",sep=""),overwrite=TRUE)
        
         png(paste(image_path,yr,"_",allaoi[aoi],"_taiwanclassification.png",sep=""),
-            width = 1920, height = 1080, units = "px")
+            width = 1080, height = 1080, units = "px")
         # png(paste("/data1/home/vivianlin0921/R_Scripts/PCA(forWFH)/plots/classificationresults/taoyuan/all/",yr,"/",yr,"_",allaoi[aoi],"_taoyuanclassification.png",sep=""))
       }
       plot(outputraster,
            col=colors)
       dev.off()
       
-     
-      #clear up variables "allpoints" and "rasterallpoints"
+      print(paste("please chech the image file:", image_path,yr,"_",allaoi[aoi],"_taiwanclassification.png",sep="") )
+   
+       #clear up variables "allpoints" and "rasterallpoints"
       rm(allpoints)
       rm(rasterallpoints)
       # clean the memory 
@@ -526,7 +536,9 @@ while (tree2==TRUE){
   
   tree2 <- FALSE
   } #end of tree2 while loop
-  
+
+  # print current time
+  print(Sys.time())
 return()
 ## end of function fun.lu.type 
 }

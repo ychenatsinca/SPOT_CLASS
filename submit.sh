@@ -5,67 +5,38 @@ cd /lfs/home/ychen/scripts/R/Rscripts/SPOT_CLASS/vivian_code/
 # LOAD R MODULE 
 #module load r/3.1.1
 
-#echo "removing previous jobs!"
-#rm -f R_* 
-# /home/orchidee03/jryder/cru_regridded2 
-# submit the job on que 
+# submit the job on queue 
 # chmod u+x $CONFIG_FILE
 # qsub -jeo -q short $CONFIG_FILE
 CONT=0
 
-# argunment 1 to 6 are parameters for the function lai_change_analysis.R
-#fun.dyn.lai <- function ( Ref.wind=3.0, Ref.rain=100, Win.size=40, offdays=30, pdays=60)
+# argunment 1 to 6 are parameters for the function SPOT_step1.R
  
-# arg1 : EXPERINMENTS 
-# arg2 : start year & end year
-# arg3 : start day & end day 
-# arg4 :
-
-#declare -A arg_arr
-#case 00
-#arg_arr=()
-#arg_arr+=('12 30 50 0 50 TRACK_DATA_2D')
-#arg_arr+=('12 30 50 0 50 TRACK_DATA_2D')
-
-
-
-
-#for iwind in 12 14 16  
-
-#do 
-#arg1="5"   # wind speed
-#arg1="${iwind}"
-
-#for irainf in 20 
-#do 
-
-#arg2="80" #rainf 
-#arg2="${irainf}"  
-#arg3="50" #window size 
-#arg4="0" #minimum offset 
-
-# post days
-#for i in 40 50 70 90 120 150 180    
-#for i in 80 100 120 150 180      
-#for i in  110 130 150 170 190 200   
-#for i in  90 100 120 140 160 180 210   
-#for ipost in   50    
-#for i in 20 30 40 50 60  
-#----------------
-#do 
+# arg1 : xmin min of XID of GRID BOX within the AOI(Area Of Interest)
+# arg2 : xmax max of XID of GRID BOX within the AOI
+# arg3 : ymin min of YID of GRID BOX within the AOI 
+# arg4 : ymax max of YID of GRID BOX within the AOI
+# arg5 : wrk_yr selected working year
+# arg6 : aoi_region selected region of AOI (which was define in the function)
 #
-#arg5="50"   #"${ipost}"
-#arg6="TRACK_DATA_2D"
-#
-for irun in {1..1}
+for irun in {1..3}
 
 do
 #combine based
 #case 1 
 if [ "${irun}" == "1" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="XY_ID"   
+xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="NORTH"   
 fi
 #case 2
+if [ "${irun}" == "2" ]; then 
+xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="CENTRAL"   
+fi
+#case 3
+if [ "${irun}" == "3" ]; then 
+xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="SOUTH"   
+fi
+
+
 #counter for the iteration or loop 
 CONT=$(($CONT+1))
 echo "The No. of for loop: $CONT ."
@@ -135,9 +106,5 @@ chmod u+x $CONFIG_FILE
 # excute the job 
 ./$CONFIG_FILE &
 echo $CONFIG_FILE
-
-#done
-#done
-
 
 done 

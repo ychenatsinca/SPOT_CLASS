@@ -4,10 +4,10 @@
 #git init
 
 #add files 
-git add  *.R *.sh  
+git add  *.R *.sh *submit* 
 
 #commit files 
-git commit -m "Update files for SPOT classfication yy version!"
+git commit -m "add submision files!"
 
 
 #set the origin, only for the first time

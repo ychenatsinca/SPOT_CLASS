@@ -9,11 +9,12 @@
 #
 # Now I'm working on the Step-1 for the satatistic of the single grid box classfication 
 #
-fun.lu.type <- function (xmin=235, xmax=236, ymin=210, ymax=211, wrk_yr=2015, aoi_reg="XY_ID")
+fun.lu.type <- function (xmin=235, xmax=236, ymin=210, ymax=211, wrk_yr=2015, aoi_reg = c("XY_ID"))
 # start the fun.lu.type
 {
-#aoi_reg="TAIPEI"
+#aoi_reg="XY_ID"
 #wrk_yr=2015
+#xmin=235;xmax=235;ymin=210;ymax=210
 #load libraries  
 library(raster)
 library(tidyverse)
@@ -21,20 +22,28 @@ library(rpart)
 library(rpart.plot)
 library(rgdal)
 #set AOI region 
-if (aoi_reg != "XY_ID" ) {
+print(aoi_reg)
    #set AOI with specific region
-   if(aoi_reg=="TAIPEI")  xmin=235; xmax=235; ymin=210; ymax=210
-   if(aoi_reg=="TAOYUAN") xmin=231; xmax=234; ymin=208; ymax=210
-   if(aoi_reg=="TAIWAN")  xmin=224; xmax=240; ymin=185; ymax=212
-   if(aoi_reg=="NORTH")   xmin=224; xmax=240; ymin=205; ymax=212
-   if(aoi_reg=="CENTRAL") xmin=224; xmax=240; ymin=195; ymax=204
-   if(aoi_reg=="SOUTH")   xmin=224; xmax=240; ymin=185; ymax=194
-
-   #set AOI as user defined x and y id range
-   } else {
-      xmin=xmin; xmax=xmax
-      ymin=ymin; ymax=ymax 
-   } #end else if 
+   if (aoi_reg == "TAIPEI") {
+       xmin=235;xmax=235; ymin=210; ymax=210
+     }else if (aoi_reg=="TAOYUAN") {
+               xmin=231; xmax=234; ymin=208; ymax=210 
+     }else if (aoi_reg=="NORTH") { 
+               xmin=224; xmax=240; ymin=205; ymax=212
+     }else if (aoi_reg=="CENTRAL") {
+               xmin=224; xmax=240; ymin=195; ymax=204
+     }else if (aoi_reg=="SOUTH") {
+               xmin=224; xmax=240; ymin=185; ymax=194
+     } else {
+       xmin=xmin;xmax=xmax;ymin=ymin;ymax=ymax
+     } 
+   
+#else if(aoi_reg=="TAOYUAN") {xmin=231; xmax=234; ymin=208; ymax=210}
+#   else if(aoi_reg=="TAIWAN")  {xmin=224; xmax=240; ymin=185; ymax=212}
+#   else if(aoi_reg=="NORTH")   {xmin=224; xmax=240; ymin=205; ymax=212}
+#   else if(aoi_reg=="CENTRAL") {xmin=224; xmax=240; ymin=195; ymax=204}
+#   else if(aoi_reg=="SOUTH")   {xmin=224; xmax=240; ymin=185; ymax=194}
+ 
 #--------------------#classification decision tree#--------------------#
 tree2 <- TRUE
 while (tree2==TRUE){
@@ -66,7 +75,6 @@ while (tree2==TRUE){
       allaoi <- append(allaoi, paste(x,"_",y,sep=""))
     }
   }
-  
   str_yr <- min(wrk_yr)
   end_yr <- max(wrk_yr)
   #delete aoi grid index if there are no images within the grid 
@@ -88,7 +96,9 @@ while (tree2==TRUE){
   }
   #remove aoi's that are set as 0 (meaning these aoi does not contain SPOT images within inventory)
   allaoi <- allaoi[allaoi!=0]
-  
+  #show xid and yid of the selceted images in the AOI
+  print(paste("working image in the AOI:",as.character(aoi_images),sep=""))
+
   #classification algorithm for future images
   # test for year 2013 
   for (yr in str_yr:end_yr){ #doesn't iterate yr 2018 because when iterating 2017, 2018 will be counted in
@@ -525,7 +535,9 @@ while (tree2==TRUE){
       dev.off()
       
       print(paste("please chech the image file:", image_path,yr,"_",allaoi[aoi],"_taiwanclassification.png",sep="") )
-   
+      # print current time
+      print(Sys.time())
+ 
        #clear up variables "allpoints" and "rasterallpoints"
       rm(allpoints)
       rm(rasterallpoints)
@@ -537,9 +549,7 @@ while (tree2==TRUE){
   tree2 <- FALSE
   } #end of tree2 while loop
 
-  # print current time
-  print(Sys.time())
-return()
+ #return()
 ## end of function fun.lu.type 
 }
 

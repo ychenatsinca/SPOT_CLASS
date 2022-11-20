@@ -25,15 +25,15 @@ do
 #combine based
 #case 1 
 if [ "${irun}" == "1" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="NORTH"   
+xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2016"; aoi_reg="NORTH"   
 fi
 #case 2
 if [ "${irun}" == "2" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="CENTRAL"   
+xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2016"; aoi_reg="CENTRAL"   
 fi
 #case 3
 if [ "${irun}" == "3" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2015"; aoi_reg="SOUTH"   
+xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2016"; aoi_reg="SOUTH"   
 fi
 
 

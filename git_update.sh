@@ -7,7 +7,7 @@
 git add  *.R *.sh *submit* 
 
 #commit files 
-git commit -m "update AOI controls in R file !"
+git commit -m " tunning some parameters !"
 
 
 #set the origin, only for the first time

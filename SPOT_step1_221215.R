@@ -9,7 +9,7 @@
 #
 # Now I'm working on the Step-1 for the satatistic of the single grid box classfication 
 #
-fun.lu.type <- function (xmin=235, xmax=236, ymin=210, ymax=211, wrk_yr=2015, aoi_reg = c("TAIEPI"))
+fun.lu.type <- function (xmin=235, xmax=236, ymin=210, ymax=211, wrk_yr=2015, aoi_reg = c("AOI"))
 # start the fun.lu.type
 {
 #aoi_reg="XY_ID"
@@ -25,7 +25,7 @@ library(rgdal)
 print(aoi_reg)
    #set AOI with specific region
    if (aoi_reg == "TAIPEI") {
-       xmin=235;xmax=235; ymin=210; ymax=210
+       xmin=234;xmax=237; ymin=209; ymax=212
      }else if (aoi_reg=="TAOYUAN") {
                xmin=231; xmax=234; ymin=208; ymax=210 
      }else if (aoi_reg=="NORTH") { 
@@ -36,7 +36,9 @@ print(aoi_reg)
                xmin=231; xmax=240; ymin=195; ymax=204
      }else if (aoi_reg=="SOUTH") {
                xmin=224; xmax=240; ymin=185; ymax=194
-     } else {
+     }else if (aoi_reg=="TAIWAN"){
+               xmin=224; xmax=240; ymin=185; ymax=212
+     }else {
        xmin=xmin;xmax=xmax;ymin=ymin;ymax=ymax
      } 
    
@@ -79,9 +81,13 @@ while (tree2==TRUE){
   }
   str_yr <- min(wrk_yr)
   end_yr <- max(wrk_yr)
-  #delete aoi grid index if there are no images within the grid 
-  #(ex. 231_210 is iterated in loop into allaoi list but actually does not exist within taiwan aoi images)
-  for (yr in str_yr:end_yr){
+  
+  #classification algorithm for future images
+  # test for year 2013 
+  for (yr in str_yr:end_yr){ #doesn't iterate yr 2018 because when iterating 2017, 2018 will be counted in
+    print(yr)
+    
+    #delete aoi grid index if there are no images within the grid
     for (aoi in 1:length(allaoi)){
       #direct to directory based on year
       directory <- paste("/lfs/home/ychen/Satellite/SPOT_CSRSR/grid_box/",yr,"/",sep="")
@@ -95,18 +101,13 @@ while (tree2==TRUE){
         allaoi[aoi] <- 0 #set as 0 first and not delete the item, so i won't mess up the index in the aoi_images list
       }
     }
-  }
-  #remove aoi's that are set as 0 (meaning these aoi does not contain SPOT images within inventory)
-  allaoi <- allaoi[allaoi!=0]
-  #show xid and yid of the selceted images in the AOI
-  print(paste("working image in the AOI:",as.character(allaoi),sep=""))
+    #remove aoi's that are set as 0 (meaning these aoi does not contain SPOT images within inventory)
+    allaoi <- allaoi[allaoi!=0]
+    
+    #show xid and yid of the selceted images in the AOI
+    print(paste("working image in the AOI:",as.character(allaoi),sep=""))
 
-  #classification algorithm for future images
-  # test for year 2013 
-  for (yr in str_yr:end_yr){ #doesn't iterate yr 2018 because when iterating 2017, 2018 will be counted in
-  
-  #for (yr in c(2013,2014,2015,2016,2017,2019,2020,2021,2022)){ #doesn't iterate yr 2018 because when iterating 2017, 2018 will be counted in
-    print(yr)
+
     for (aoi in 1:length(allaoi)){
       print(aoi)
       if (yr==2017){ #separate if statement for years 2017 2018 to bind two year's images to classify
@@ -217,10 +218,27 @@ while (tree2==TRUE){
                                       "September_G"=NA,
                                       "October_G"=NA,
                                       "November_G"=NA,
-                                      "December_G"=NA)
+                                      "December_G"=NA,
+                                      "January_NIR"=NA,
+                                      "February_NIR"=NA,
+                                      "March_NIR"=NA,
+                                      "April_NIR"=NA,
+                                      "May_NIR"=NA,
+                                      "June_NIR"=NA,
+                                      "July_NIR"=NA,
+                                      "August_NIR"=NA,
+                                      "September_NIR"=NA,
+                                      "October_NIR"=NA,
+                                      "November_NIR"=NA,
+                                      "December_NIR"=NA)
         colnames(rasterallpoints) <- c("index","Jan_N","Feb_N","Mar_N","Apr_N","May_N","Jun_N","Jul_N","Aug_N","Sep_N","Oct_N","Nov_N","Dec_N",
-                                               "Jan_G","Feb_G","Mar_G","Apr_G","May_G","Jun_G","Jul_G","Aug_G","Sep_G","Oct_G","Nov_G","Dec_G")
+                                               "Jan_G","Feb_G","Mar_G","Apr_G","May_G","Jun_G","Jul_G","Aug_G","Sep_G","Oct_G","Nov_G","Dec_G",
+                                               "Jan_NIR","Feb_NIR","Mar_NIR","Apr_NIR","May_NIR","Jun_NIR","Jul_NIR","Aug_NIR","Sep_NIR","Oct_NIR","Nov_NIR","Dec_NIR")
         
+        # print current time
+        print(Sys.time())
+ 
+
         #loop among 12 months to retrieve monthly median NDVI & GRVI values for aoi
         for (month in 1:12){ #12 months
           print(month)
@@ -236,6 +254,7 @@ while (tree2==TRUE){
           if (length(subset_aoiimages)==0){
             rasterallpoints[,month+1] <- NA #ex. NDVI january column is the 1+1=2 2nd column
             rasterallpoints[,month+13] <- NA #ex. GRVI january column is the 1+13=14 14th column
+            rasterallpoints[,month+25] <- NA #ex. NIR january column is the 1+25=26 26th column
             next
           }else{
             #loop to stack images with same month and aoi to calculate median NDVI&GRVI
@@ -261,14 +280,17 @@ while (tree2==TRUE){
               #extend created NDVI & GRVI raster to the universal extent for the images of the aoi with NA values
               tempNDVIlayer <- extend(tempNDVIlayer, extent, value=NA)
               tempGRVIlayer <- extend(tempGRVIlayer, extent, value=NA)
+              band4 <- extend(band4, extent, value=NA)
               #stack all images under the month together; resulting NDVIstack & GRVIstack 
               #raster stack holds NDVI & GRVI value of all the images available under the year and month of that aoi
               if (image==1){
                 NDVIstack <- tempNDVIlayer
                 GRVIstack <- tempGRVIlayer
+                NIRstack <- band4
               }else{
                 NDVIstack <- stack(NDVIstack, tempNDVIlayer)
                 GRVIstack <- stack(GRVIstack, tempGRVIlayer)
+                NIRstack <- stack(NIRstack, band4)
               }
             } #end of image-loop
             #if NDVIstack has more than one layer (aka more than one available image for the month), perform median among all layers
@@ -295,12 +317,26 @@ while (tree2==TRUE){
               # don't need to perform median; the GRVI will be counted for the month
               medianGRVI_ofmonth <- GRVIstack
             }
+              #if NIRstack has more than one layer 
+              #(aka more than one available image for the month), perform median among all layers
+            if (dim(NIRstack)[3]!=1){
+              #convert from RasterLayer to RasterBrick
+              NIRstack <- brick(NIRstack)
+              #perform median among the raster stack of all images under the month together
+              medianNIR_ofmonth <- calc(NIRstack, median,na.rm=T) #ignore error, still produces results
+            }else if (dim(NIRstack)[3]==1){ 
+              #if NIRstack only has one layer, meaning there is only one available image for the month, 
+              # don't need to perform median; the NIR will be counted for the month
+              medianNIR_ofmonth <- NIRstack
+            }
             #convert median NDVI & GRVI value raster for the month to a dataframe
             medianNDVI <- as.data.frame(medianNDVI_ofmonth)
             medianGRVI <- as.data.frame(medianGRVI_ofmonth)
+            medianNIR <- as.data.frame(medianNIR_ofmonth)
             #set the points' median NDVI & GRVI value for the month as the median NDVI & GRVI values within dataframe
             rasterallpoints[,month+1] <- medianNDVI #ex. NDVI january column is the 1+1=2 2nd column
             rasterallpoints[,month+13] <- medianGRVI #ex. GRVI january column is the 1+13=14 14th column
+            rasterallpoints[,month+25] <- medianNIR #ex. NIR january column is the 1+25=26 26th column
           }
         } #end of month-loop
       
@@ -389,9 +425,22 @@ while (tree2==TRUE){
                                       "September_G"=NA,
                                       "October_G"=NA,
                                       "November_G"=NA,
-                                      "December_G"=NA)
+                                      "December_G"=NA,
+                                      "January_NIR"=NA,
+                                      "February_NIR"=NA,
+                                      "March_NIR"=NA,
+                                      "April_NIR"=NA,
+                                      "May_NIR"=NA,
+                                      "June_NIR"=NA,
+                                      "July_NIR"=NA,
+                                      "August_NIR"=NA,
+                                      "September_NIR"=NA,
+                                      "October_NIR"=NA,
+                                      "November_NIR"=NA,
+                                      "December_NIR"=NA)
         colnames(rasterallpoints) <- c("index","Jan_N","Feb_N","Mar_N","Apr_N","May_N","Jun_N","Jul_N","Aug_N","Sep_N","Oct_N","Nov_N","Dec_N",
-                                               "Jan_G","Feb_G","Mar_G","Apr_G","May_G","Jun_G","Jul_G","Aug_G","Sep_G","Oct_G","Nov_G","Dec_G")
+                                       "Jan_G","Feb_G","Mar_G","Apr_G","May_G","Jun_G","Jul_G","Aug_G","Sep_G","Oct_G","Nov_G","Dec_G",
+                                       "Jan_NIR","Feb_NIR","Mar_NIR","Apr_NIR","May_NIR","Jun_NIR","Jul_NIR","Aug_NIR","Sep_NIR","Oct_NIR","Nov_NIR","Dec_NIR")
         
         #loop among 12 months to retrieve monthly median NDVI & GRVI values for aoi
         for (month in 1:12){ #12 months
@@ -408,6 +457,7 @@ while (tree2==TRUE){
           if (length(subset_aoiimages)==0){
             rasterallpoints[,month+1] <- NA #ex. NDVI january column is the 1+1=2 2nd column
             rasterallpoints[,month+13] <- NA #ex. GRVI january column is the 1+13=14 14th column
+            rasterallpoints[,month+25] <- NA #ex. NIR january column is the 1+25=26 26th column
             next
           }else{
             #loop to stack images with same month and aoi to calculate median NDVI&GRVI
@@ -423,14 +473,17 @@ while (tree2==TRUE){
               #extend created NDVI & GRVI raster to the universal extent for the images of the aoi with NA values
               tempNDVIlayer <- extend(tempNDVIlayer, extent, value=NA)
               tempGRVIlayer <- extend(tempGRVIlayer, extent, value=NA)
+              band4 <- extend(band4, extent, value=NA)
               # stack all images under the month together; resulting NDVIstack & GRVIstack raster stack holds NDVI & GRVI 
               # value of all the images available under the year and month of that aoi
               if (image==1){
                 NDVIstack <- tempNDVIlayer
                 GRVIstack <- tempGRVIlayer
+                NIRstack <- band4
               }else{
                 NDVIstack <- stack(NDVIstack, tempNDVIlayer)
                 GRVIstack <- stack(GRVIstack, tempGRVIlayer)
+                NIRstack <- stack(NIRstack, band4)
               }
             } # end of image-loop
               # if NDVIstack has more than one layer (aka more than one available image for the month), perform median among all layers
@@ -455,12 +508,25 @@ while (tree2==TRUE){
               #don't need to perform median; the GRVI will be counted for the month
               medianGRVI_ofmonth <- GRVIstack
             }
+              #if NIRstack has more than one layer (aka more than one available image for the month), perform median among all layers
+            if (dim(NIRstack)[3]!=1){
+              #convert from RasterLayer to RasterBrick
+              NIRstack <- brick(NIRstack)
+              #perform median among the raster stack of all images under the month together
+              medianNIR_ofmonth <- calc(NIRstack, median,na.rm=T) #ignore error, still produces results
+            }else if (dim(NIRstack)[3]==1){ 
+              #if NIRstack only has one layer, meaning there is only one available image for the month, 
+              #don't need to perform median; the NIR will be counted for the month
+              medianNIR_ofmonth <- NIRstack
+            }
             #convert median NDVI & GRVI value raster for the month to a dataframe
             medianNDVI <- as.data.frame(medianNDVI_ofmonth)
             medianGRVI <- as.data.frame(medianGRVI_ofmonth)
+            medianNIR <- as.data.frame(medianNIR_ofmonth)
             #set the points' median NDVI & GRVI value for the month as the median NDVI & GRVI values within dataframe
             rasterallpoints[,month+1] <- medianNDVI #ex. NDVI january column is the 1+1=2 2nd column
             rasterallpoints[,month+13] <- medianGRVI #ex. GRVI january column is the 1+13=14 14th column
+            rasterallpoints[,month+25] <- medianNIR #ex. NIR january column is the 1+25=26 26th column
           }
         } #end of month-loop
       } #end of if else statement
@@ -472,6 +538,10 @@ while (tree2==TRUE){
       rasterallpoints["variance_N"] <-apply(X=rasterallpoints[2:13], MARGIN=1, FUN=var,na.rm=T) #margin=1 meaning retrieving variance by row
       #calculate max of median GRVI from Jan to Dec for all points stored in new column "max_G"
       rasterallpoints["max_G"] <-apply(X=rasterallpoints[14:25], MARGIN=1, FUN=max,na.rm=T)
+      #calculate median of median NIR from Jan to Dec for all points stored in new column "median_NIR"
+      rasterallpoints["median_NIR"] <-apply(X=rasterallpoints[26:37], MARGIN=1, FUN=median,na.rm=T)
+      #calculate NDVImax/variance ratio
+      rasterallpoints["maxvar_ratio"] <- rasterallpoints["max_N"]/rasterallpoints["variance_N"]
       
       #--------------------#classification based on decision tree#--------------------#
       #classify as forest=1, builtup=2, water=3, agri=4, unknown=5
@@ -479,22 +549,19 @@ while (tree2==TRUE){
       allpoints <- rasterallpoints
       allpoints["class"] <- NA
       #thresholds
-      allpoints$class[allpoints$max_N<=0.03] <- 3
+      allpoints$class[allpoints$max_N<=0.02] <- 3
       
-      allpoints$class[allpoints$max_N>0.03 & allpoints$max_N<=0.11 & allpoints$variance_N<=0.003] <- 2
-      allpoints$class[allpoints$max_N>0.03 & allpoints$max_N<=0.11 & allpoints$variance_N>0.003] <- 3
+      allpoints$class[allpoints$max_N>0.02 & allpoints$max_N<=0.11 & allpoints$variance_N<=0.005] <- 2
+      allpoints$class[allpoints$max_N>0.02 & allpoints$max_N<=0.11 & allpoints$variance_N>0.005] <- 3
       
-      allpoints$class[allpoints$max_N>0.11 & allpoints$max_N<=0.19 & allpoints$max_G<=1.1] <- 3
-      allpoints$class[allpoints$max_N>0.11 & allpoints$max_N<=0.19 & allpoints$max_G>1.1] <- 2
+      allpoints$class[allpoints$max_N>0.11 & allpoints$max_N<=0.19 & allpoints$median_NIR<=150] <- 3 
+      allpoints$class[allpoints$max_N>0.11 & allpoints$max_N<=0.19 & allpoints$median_NIR>150] <- 2
       
-      allpoints$class[allpoints$max_N>0.19 & allpoints$max_N<0.39 & allpoints$variance_N>=0.013 & allpoints$variance_N<=0.089] <- 4
-      allpoints$class[allpoints$max_N>0.19 & allpoints$max_N<0.39 & (allpoints$variance_N<0.013 | allpoints$variance_N>0.089)] <- 2
+      allpoints$class[allpoints$max_N>0.19 & allpoints$max_N<=0.39 & allpoints$variance_N>=0.013 & allpoints$variance_N<=0.089] <- 4
+      allpoints$class[allpoints$max_N>0.19 & allpoints$max_N<=0.39 & (allpoints$variance_N<0.013 | allpoints$variance_N>0.089)] <- 2
       
-      allpoints$class[allpoints$max_N>=0.39 & allpoints$max_N<=0.74 & allpoints$variance_N<=0.02] <- 1
-      allpoints$class[allpoints$max_N>=0.39 & allpoints$max_N<=0.74 & allpoints$variance_N>0.02] <- 4
-      
-      allpoints$class[allpoints$max_N>0.74 & allpoints$variance_N<=0.03] <- 1
-      allpoints$class[allpoints$max_N>0.74 & allpoints$variance_N>0.03] <- 4
+      allpoints$class[allpoints$max_N>0.39 & allpoints$maxvar_ratio<=19.19] <- 4
+      allpoints$class[allpoints$max_N>0.39 & allpoints$maxvar_ratio>19.19] <- 1
       
       #classify points that are not classified from above decision tree as unknown land type 5
       allpoints$class[is.na(allpoints$class)==TRUE] <- 5 
@@ -510,41 +577,37 @@ while (tree2==TRUE){
       #subset color palette to the available classified values (ex. sometimes an image doesn't have unknown land type, so we omit grey from the color palette)
       colors <- colors[sort(unique(outputraster))]
      
-      #creat structured folder  
-      image_path <- paste("/lfs/home/ychen/scripts/R/Rscripts/SPOT_CLASS/vivian_code/results",sep="")
+      #create structured folder  
+      image_path <- paste("/lfs/home/ychen/scripts/R/Rscripts/SPOT_CLASS/vivian_code/results/",sep="")
       dir.create(image_path)  
       image_path <- paste("/lfs/home/ychen/scripts/R/Rscripts/SPOT_CLASS/vivian_code/results/",yr,sep="")
-      dir.create(image_path) 
-      image_path <- paste("/lfs/home/ychen/scripts/R/Rscripts/SPOT_CLASS/vivian_code/results/",yr,"/all",sep="")
-      dir.create(image_path) 
+       dir.create(image_path) 
+      # image_path <- paste("/lfs/home/ychen/scripts/R/Rscripts/SPOT_CLASS/vivian_code/results/",yr,"/all",sep="")
+      # dir.create(image_path) 
 
 
       if (yr==2017){
         writeRaster(outputraster,paste(image_path,"/2017and2018_",allaoi[aoi],".tif",sep=""),overwrite=TRUE)
 
-        png(paste(image_path,"/2017and2018_",allaoi[aoi],".png",sep=""),
-             width = 1080, height = 1080, units = "px")
-        # png(paste("/data1/home/vivianlin0921/R_Scripts/PCA(forWFH)/plots/classificationresults/taoyuan/all/",yr,"/2017and2018_",allaoi[aoi],"_taoyuanclassification.png",sep=""))
+        png(paste(image_path,"/2017and2018/",allaoi[aoi],".png",sep=""))
       }else{
-        writeRaster(outputraster,paste(image_path,yr,"_",allaoi[aoi],".tif",sep=""),overwrite=TRUE)
+        writeRaster(outputraster,paste(image_path,"/",allaoi[aoi],".tif",sep=""),overwrite=TRUE)
        
-        png(paste(image_path,yr,"_",allaoi[aoi],".png",sep=""),
-            width = 1080, height = 1080, units = "px")
-        # png(paste("/data1/home/vivianlin0921/R_Scripts/PCA(forWFH)/plots/classificationresults/taoyuan/all/",yr,"/",yr,"_",allaoi[aoi],"_taoyuanclassification.png",sep=""))
+        png(paste(image_path,"/",allaoi[aoi],".png",sep=""))
       }
-      plot(outputraster,
-           col=colors)
-      dev.off()
+      #plot(outputraster,
+      #     col=colors)
+      #dev.off()
       
-      print(paste("please check the image file:", image_path,yr,"_",allaoi[aoi],".png",sep="") )
+      print(paste("please chech the image file:", image_path,"/",allaoi[aoi],".png",sep="") )
       # print current time
       print(Sys.time())
  
-       #clear up variables "allpoints" and "rasterallpoints"
+      #clear up variables "allpoints" and "rasterallpoints"
       rm(allpoints)
       rm(rasterallpoints)
       # clean the memory 
-      #gc()
+      gc()
     } #end of aoi-for loop
   } #end of yr-for loop
   

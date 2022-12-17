@@ -18,24 +18,97 @@ CONT=0
 # arg4 : ymax max of YID of GRID BOX within the AOI
 # arg5 : wrk_yr selected working year
 # arg6 : aoi_region selected region of AOI (which was define in the function)
-#
-for irun in {1..3}
+# arg7 : tunning paramter for the decision tree 
+
+wrk_yr="2021"; aoi_reg="AOI"
+
+xmin="224"; xmax="240"; 
+
+for irun in {1..20}
 
 do
 #combine based
 #case 1 
 if [ "${irun}" == "1" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2016"; aoi_reg="NORTH"   
+ymin="185"; ymax="187";     
 fi
 #case 2
 if [ "${irun}" == "2" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2016"; aoi_reg="CENTRAL"   
+ymin="188"; ymax="189";   
 fi
-#case 3
+#case 3 
 if [ "${irun}" == "3" ]; then 
-xmin="235"; xmax="236"; ymin="210"; ymax="211"; wrk_yr="2016"; aoi_reg="SOUTH"   
+ymin="190"; ymax="191";   
+fi
+#case 4
+if [ "${irun}" == "4" ]; then 
+ymin="192"; ymax="193";   
+fi
+#case 5
+if [ "${irun}" == "5" ]; then 
+ymin="194"; ymax="194";   
+fi
+#case 6
+if [ "${irun}" == "6" ]; then 
+ymin="195"; ymax="195";   
+fi
+#case 7
+if [ "${irun}" == "7" ]; then 
+ymin="196"; ymax="196";   
+fi
+#case 8
+if [ "${irun}" == "8" ]; then 
+ymin="197"; ymax="197";   
 fi
 
+#case 9
+if [ "${irun}" == "9" ]; then 
+ymin="198"; ymax="198";   
+fi
+#case 10
+if [ "${irun}" == "10" ]; then 
+ymin="199"; ymax="199";   
+fi
+#case 11
+if [ "${irun}" == "11" ]; then 
+ymin="200"; ymax="200";   
+fi
+#case 12
+if [ "${irun}" == "12" ]; then 
+ymin="201"; ymax="201";   
+fi
+#case 13
+if [ "${irun}" == "13" ]; then 
+ymin="202"; ymax="202";   
+fi
+#case 14
+if [ "${irun}" == "14" ]; then 
+ymin="203"; ymax="203";   
+fi
+#case 15
+if [ "${irun}" == "15" ]; then 
+ymin="204"; ymax="204";   
+fi
+#case 16
+if [ "${irun}" == "16" ]; then 
+ymin="205"; ymax="205";   
+fi
+#case 
+if [ "${irun}" == "17" ]; then 
+ymin="206"; ymax="206";   
+fi
+#case 
+if [ "${irun}" == "18" ]; then 
+ymin="207"; ymax="207";   
+fi
+#case 
+if [ "${irun}" == "19" ]; then 
+ymin="208"; ymax="209";   
+fi
+#case 
+if [ "${irun}" == "20" ]; then 
+ymin="210"; ymax="212";   
+fi
 
 #counter for the iteration or loop 
 CONT=$(($CONT+1))
@@ -54,7 +127,7 @@ REPLACEMENT_VALUE="\/lfs\/home\/ychen\/scripts\/R\/Rscripts\/SPOT_CLASS\/vivian_
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 
 TARGET_KEY="R_filename"
-REPLACEMENT_VALUE="SPOT_step1.R"
+REPLACEMENT_VALUE="SPOT_step1_221215.R"
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 
 # RE-SET THE PARAMETER VALUES FOR EACH JOB
@@ -81,11 +154,6 @@ sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 TARGET_KEY="wrk_yr"
 REPLACEMENT_VALUE=${wrk_yr}
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
-
-#TARGET_KEY="arg7"
-#REPLACEMENT_VALUE=${arg7}
-#sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
-
 
 TARGET_KEY="log_file"
 REPLACEMENT_VALUE=${log_file}

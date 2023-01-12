@@ -20,7 +20,7 @@ CONT=0
 # arg6 : aoi_region selected region of AOI (which was define in the function)
 # arg7 : tunning paramter for the decision tree 
 
-wrk_yr="2021"; aoi_reg="AOI"
+wrk_yr="2020"; aoi_reg="AOI"
 
 xmin="224"; xmax="240"; 
 
@@ -127,7 +127,7 @@ REPLACEMENT_VALUE="\/lfs\/home\/ychen\/scripts\/R\/Rscripts\/SPOT_CLASS\/vivian_
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 
 TARGET_KEY="R_filename"
-REPLACEMENT_VALUE="SPOT_step1_221215.R"
+REPLACEMENT_VALUE="SPOT_step1_221217.R"
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 
 # RE-SET THE PARAMETER VALUES FOR EACH JOB

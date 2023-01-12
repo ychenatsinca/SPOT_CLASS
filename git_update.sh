@@ -7,7 +7,7 @@
 git add  *.R *.sh *submit* 
 
 #commit files 
-git commit -m " tunning some parameters !"
+git commit -m " add new version by pruning the decision tree  !"
 
 
 #set the origin, only for the first time

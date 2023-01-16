@@ -7,7 +7,7 @@
 git add  *.R *.sh *submit* 
 
 #commit files 
-git commit -m " add new version by pruning the decision tree  !"
+git commit -m " revised for new critiria in the decision tree !"
 
 
 #set the origin, only for the first time

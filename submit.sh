@@ -24,7 +24,9 @@ wrk_yr="2020"; aoi_reg="AOI"
 
 xmin="224"; xmax="240"; 
 
-for irun in {1..20}
+#for irun in {1..5}   # ccipc2
+#for irun in {6..15}  # rohan
+for irun in {16..20} # ccipc5
 
 do
 #combine based
@@ -127,7 +129,7 @@ REPLACEMENT_VALUE="\/lfs\/home\/ychen\/scripts\/R\/Rscripts\/SPOT_CLASS\/vivian_
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 
 TARGET_KEY="R_filename"
-REPLACEMENT_VALUE="SPOT_step1_221217.R"
+REPLACEMENT_VALUE="SPOT_step1_230112.R"
 sed -i -c "s/$TARGET_KEY/$REPLACEMENT_VALUE/" $CONFIG_FILE
 
 # RE-SET THE PARAMETER VALUES FOR EACH JOB
